@@ -152,7 +152,7 @@ const App = () => {
               target='_blank'
               rel='noreferrer'
               className='hash'>
-              # 0x733e3a154c64dbe8516486c04dcc484094ea002cd99af2f7caa2bc83adf7c9a5
+              # {hash}
             </a>
           </div>
         }
