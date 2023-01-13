@@ -1,0 +1,61 @@
+#mainSection {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}
+
+.hexagon {
+    top: 35vh;
+    position: absolute;
+    margin: 0 auto;
+    background-color: #ccc;
+    border-radius: 10px;
+    width: 100px;
+    height: 63px;
+    box-sizing: border-box;
+    transition: all 1s;
+    border: 0.4vh solid transparent;
+    transition: transform .4s;
+}
+
+.hexagon:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    background-color: #fff;
+}
+
+/* Creating pseudo-class */
+.hexagon:before,
+.hexagon:after {
+    content: "";
+    border: inherit;
+    position: absolute;
+    top: -0.5vh;
+    left: -0.5vh;
+    background-color: #fff;
+    border-radius: inherit;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+/* Align them in such a way
+that they form a hexagon */
+.hexagon:before {
+    transform: rotate(60deg);
+}
+
+.hexagon:after {
+    transform: rotate(-60deg);
+}
+
+.wave-button {
+    color: #000;
+    height: 63px;
+    position: absolute;
+    width: 100px;
+    top: 5px;
+    left: 25px;
+    z-index: 3;
+}

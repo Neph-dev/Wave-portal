@@ -1,0 +1,42 @@
+.App {
+  background: #36454f;
+  /* background: #004242; */
+  width: 100%;
+  min-height: 100vh;
+}
+
+.main-upper-section {
+  width: 100%;
+}
+
+.wave-address {
+  color: #E5E4E2;
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.wave-text {
+  color: #E5E4E2;
+  font-size: 16px;
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.hash-container {
+  background: #004242;
+  bottom: 10vh;
+  border-radius: 20px;
+  margin-left: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+  position: absolute;
+}
+
+.hash {
+  color: #E5E4E2;
+  font-size: 16px;
+}
