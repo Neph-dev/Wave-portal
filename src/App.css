@@ -5,6 +5,11 @@
   min-height: 100vh;
 }
 
+.medium-separator {
+  width: 100%;
+  height: 4vh;
+}
+
 .main-upper-section {
   width: 100%;
 }
@@ -39,4 +44,48 @@
 .hash {
   color: #E5E4E2;
   font-size: 16px;
+}
+
+.txnSection-card {
+  display: flex;
+  cursor: context-menu;
+  align-items: center;
+  background-color: #1b1b1b;
+  border-radius: 10px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  margin-left: 20px;
+  margin-top: 50px;
+  -webkit-backdrop-filter: blur(5px);
+
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  height: 150px;
+  width: 245px;
+}
+
+.FaEthereum {
+  height: 50px;
+  width: 50px;
+}
+
+.txnSection-card-account {
+  color: #b2beb5;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.txnSection-card-name {
+  bottom: 0;
+  color: #b2beb5;
+  font-size: 10px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  position: absolute;
 }

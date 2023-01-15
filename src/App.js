@@ -4,10 +4,13 @@ import { ethers } from 'ethers'
 import './App.css'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+import { FaEthereum } from 'react-icons/fa'
 
 import Header from './components/Header'
 import MainSection from './components/MainSection'
 import abi from './utils/WavePortal.json'
+import TxnHistory from './components/TxnHistory'
+import { TextAbstract } from './utils/textAbstract'
 
 
 const getEthereumObject = () => window.ethereum
@@ -35,21 +38,38 @@ const App = () => {
 
   const [curentAccount, setCurentAccount] = useState()
   const [totalWaves, setTotalWaves] = useState()
+  const [allWaves, setAllWaves] = useState([])
   const [hash, setHash] = useState()
   const [isWaving, setIsWaving] = useState(false)
+  const [message, setMessage] = useState('')
+
+  const goerliEtherscan_BaseURL = 'https://goerli.etherscan.io/tx/'
 
   const contractABI = abi.abi
-  const contractAddress = '0x06034086AcFD579d47cB49Ba54d7003ff9440002'
+  const contractAddress = '0x5396779F1b97690FBbbC0677334132dF059e7778'
+
+  const ethereum = getEthereumObject()
+  const provider = new ethers.providers.Web3Provider(ethereum)
+  const signer = provider.getSigner()
+  const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer)
 
   const getTotalWavesCount = async () => {
-    const ethereum = getEthereumObject()
-
-    const provider = new ethers.providers.Web3Provider(ethereum)
-    const signer = provider.getSigner()
-    const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer)
-
     let count = await wavePortalContract.getTotalWaves()
     setTotalWaves(count.toNumber())
+  }
+
+  const getAllWaves = async () => {
+    let waves = await wavePortalContract.getAllWaves()
+
+    let wavesCleaned = []
+    waves.forEach(wave => {
+      wavesCleaned.push({
+        address: wave.waver,
+        timestamp: new Date(wave.timestamp * 1000),
+        message: wave.message
+      })
+    })
+    setAllWaves(wavesCleaned)
   }
 
   useEffect(() => {
@@ -58,6 +78,7 @@ const App = () => {
 
   useEffect(() => {
     getTotalWavesCount()
+    getAllWaves()
     findMetamaskWallet()
       .then((account) => {
         if (account !== null) {
@@ -99,7 +120,7 @@ const App = () => {
         let count = await wavePortalContract.getTotalWaves()
         console.log('Retrieved total wave count...', count.toNumber())
 
-        const waveTxn = await wavePortalContract.waves()
+        const waveTxn = await wavePortalContract.wave(message)
         console.log('Mining...', waveTxn.hash)
         setHash(waveTxn.hash)
 
@@ -108,7 +129,10 @@ const App = () => {
 
         count = await wavePortalContract.getTotalWaves()
         console.log("Retrieved total wave count...", count.toNumber())
+
         setTotalWaves(count.toNumber())
+        getAllWaves()
+        setMessage('')
         setIsWaving(false)
       } else {
         console.log("Ethereum object doesn't exist!")
@@ -130,25 +154,44 @@ const App = () => {
 
       <section className='main-upper-section'>
         <>
-          <div className='wave-address'>
+          {/* <div className='wave-address'>
             {curentAccount === null || curentAccount === undefined ?
               'Hey Stranger!'
               : `Hey ${curentAccount}`}
-          </div>
-          <div className='wave-text'>
+              </div>
+              <div className='wave-text'>
             I'm Neph, I make Web3 apps. Cool right ?! <br />
             Well, connect your wallet and wave at me.
+          </div> */}
+
+          <div
+            data-aos="fade-right"
+            className='txnSection-card'>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <FaEthereum className='FaEthereum' color={'#d3d3d3'} />
+              <div
+                style={{ color: (curentAccount === undefined || curentAccount === null) && '#d3d3d3' }}
+                className='txnSection-card-account'>
+                {TextAbstract(curentAccount, 23)}
+                {(curentAccount === null || curentAccount === undefined) && '0x........................................'}
+              </div>
+              <div
+                title='Please make sure of using the Goerli testnet.'
+                className='txnSection-card-name'>
+                NETWORK_ <b>GOERLI TESTNET</b>
+              </div>
+            </div>
           </div>
         </>
 
-        <MainSection wave={wave} />
+        <MainSection setMessage={setMessage} wave={wave} />
 
         {hash &&
           <div
             data-aos="fade-right"
             className='hash-container'>
             <a
-              href={'https://goerli.etherscan.io/tx/' + hash}
+              href={`${goerliEtherscan_BaseURL}${hash}`}
               target='_blank'
               rel='noreferrer'
               className='hash'>
@@ -157,6 +200,10 @@ const App = () => {
           </div>
         }
       </section>
+
+      <TxnHistory allWaves={allWaves} />
+
+      <div className='medium-separator' />
     </div>
   )
 }
