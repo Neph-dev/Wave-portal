@@ -1,7 +1,8 @@
 #mainSection {
     display: flex;
     justify-content: center;
-    height: 50vh;
+    height: 20vh;
+    margin-top: 50px;
 }
 
 .hexagon-container {

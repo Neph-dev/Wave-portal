@@ -46,19 +46,25 @@ const App = () => {
   const goerliEtherscan_BaseURL = 'https://goerli.etherscan.io/tx/'
 
   const contractABI = abi.abi
-  const contractAddress = '0x5396779F1b97690FBbbC0677334132dF059e7778'
-
-  const ethereum = getEthereumObject()
-  const provider = new ethers.providers.Web3Provider(ethereum)
-  const signer = provider.getSigner()
-  const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer)
+  const contractAddress = '0xf98921bC4b2Cf26f510651d3C3934239E4D0Bfd4'
 
   const getTotalWavesCount = async () => {
+    const ethereum = getEthereumObject()
+    const provider = new ethers.providers.Web3Provider(ethereum)
+    const signer = provider.getSigner()
+    const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer)
+
     let count = await wavePortalContract.getTotalWaves()
     setTotalWaves(count.toNumber())
   }
 
   const getAllWaves = async () => {
+
+    const ethereum = getEthereumObject()
+    const provider = new ethers.providers.Web3Provider(ethereum)
+    const signer = provider.getSigner()
+    const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer)
+
     let waves = await wavePortalContract.getAllWaves()
 
     let wavesCleaned = []
@@ -85,7 +91,38 @@ const App = () => {
           setCurentAccount(account)
         }
       })
+
+    let wavePortalContract
+
+    const onNewWave = (from, timestamp, message) => {
+      console.log("NewWave", from, timestamp, message)
+      setAllWaves(prevState => [
+        ...prevState,
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+      ])
+    }
+
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+
+      wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer)
+      wavePortalContract.on("NewWave", onNewWave)
+    }
+
+    return () => {
+      if (wavePortalContract) {
+        wavePortalContract.off("NewWave", onNewWave)
+      }
+    }
     // eslint-disable-next-line
+  }, [])
+
+  useEffect(() => {
   }, [])
 
   const connectWallet = async () => {
@@ -120,7 +157,7 @@ const App = () => {
         let count = await wavePortalContract.getTotalWaves()
         console.log('Retrieved total wave count...', count.toNumber())
 
-        const waveTxn = await wavePortalContract.wave(message)
+        const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 })
         console.log('Mining...', waveTxn.hash)
         setHash(waveTxn.hash)
 
@@ -131,15 +168,23 @@ const App = () => {
         console.log("Retrieved total wave count...", count.toNumber())
 
         setTotalWaves(count.toNumber())
-        getAllWaves()
         setMessage('')
         setIsWaving(false)
+        setTimeout(() => {
+          setHash()
+        }, 4000)
       } else {
         console.log("Ethereum object doesn't exist!")
+        setTimeout(() => {
+          setHash()
+        }, 4000)
       }
     } catch (error) {
       console.log(error)
       setIsWaving(false)
+      setTimeout(() => {
+        setHash()
+      }, 4000)
     }
   }
 
@@ -184,7 +229,7 @@ const App = () => {
           </div>
         </>
 
-        <MainSection setMessage={setMessage} wave={wave} />
+        <MainSection message={message} setMessage={setMessage} wave={wave} />
 
         {hash &&
           <div
