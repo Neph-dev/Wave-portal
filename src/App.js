@@ -4,13 +4,14 @@ import { ethers } from 'ethers'
 import './App.css'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
-import { FaEthereum } from 'react-icons/fa'
 
 import Header from './components/Header'
 import MainSection from './components/MainSection'
 import abi from './utils/WavePortal.json'
 import TxnHistory from './components/TxnHistory'
 import { TextAbstract } from './utils/textAbstract'
+import Card from './components/Card'
+import HashMessage from './components/HashMessage'
 
 
 const getEthereumObject = () => window.ethereum
@@ -42,8 +43,6 @@ const App = () => {
   const [hash, setHash] = useState()
   const [isWaving, setIsWaving] = useState(false)
   const [message, setMessage] = useState('')
-
-  const goerliEtherscan_BaseURL = 'https://goerli.etherscan.io/tx/'
 
   const contractABI = abi.abi
   const contractAddress = '0xf98921bC4b2Cf26f510651d3C3934239E4D0Bfd4'
@@ -122,9 +121,6 @@ const App = () => {
     // eslint-disable-next-line
   }, [])
 
-  useEffect(() => {
-  }, [])
-
   const connectWallet = async () => {
     try {
       const ethereum = getEthereumObject()
@@ -137,6 +133,7 @@ const App = () => {
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
       const account = accounts[0]
       setCurentAccount(account)
+      window.location.reload(false)
     }
     catch (err) {
       console.log(err)
@@ -198,52 +195,16 @@ const App = () => {
         connectWallet={connectWallet} />
 
       <section className='main-upper-section'>
-        <>
-          {/* <div className='wave-address'>
-            {curentAccount === null || curentAccount === undefined ?
-              'Hey Stranger!'
-              : `Hey ${curentAccount}`}
-              </div>
-              <div className='wave-text'>
-            I'm Neph, I make Web3 apps. Cool right ?! <br />
-            Well, connect your wallet and wave at me.
-          </div> */}
+        <Card
+          TextAbstract={TextAbstract}
+          curentAccount={curentAccount} />
 
-          <div
-            data-aos="fade-right"
-            className='txnSection-card'>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <FaEthereum className='FaEthereum' color={'#d3d3d3'} />
-              <div
-                style={{ color: (curentAccount === undefined || curentAccount === null) && '#d3d3d3' }}
-                className='txnSection-card-account'>
-                {TextAbstract(curentAccount, 23)}
-                {(curentAccount === null || curentAccount === undefined) && '0x........................................'}
-              </div>
-              <div
-                title='Please make sure of using the Goerli testnet.'
-                className='txnSection-card-name'>
-                NETWORK_ <b>GOERLI TESTNET</b>
-              </div>
-            </div>
-          </div>
-        </>
+        <MainSection
+          message={message}
+          setMessage={setMessage}
+          wave={wave} />
 
-        <MainSection message={message} setMessage={setMessage} wave={wave} />
-
-        {hash &&
-          <div
-            data-aos="fade-right"
-            className='hash-container'>
-            <a
-              href={`${goerliEtherscan_BaseURL}${hash}`}
-              target='_blank'
-              rel='noreferrer'
-              className='hash'>
-              # {hash}
-            </a>
-          </div>
-        }
+        {hash && <HashMessage hash={hash} />}
       </section>
 
       <TxnHistory allWaves={allWaves} />
